@@ -5,13 +5,15 @@ import { WS_Controller } from "./WS_Controller.ts";
 // deno-lint-ignore camelcase
 import { WS_Context } from "./WS_Context.ts";
 import { EString } from "../../deps.ts";
-import { exists } from "../../deps.ts";
+import { FS } from "../../deps.ts";
+import { FileHandler } from "../file/FileHandler.ts";
 
 // deno-lint-ignore camelcase
 export class WS_Router {
     readonly prefix: string = "";
     private _controllers: { [x: string]: WS_Controller } = {};
     private _folders: string[] = [];
+    private _fileHandler: FileHandler = new FileHandler();
 
     constructor(
         prefix: string = "",
@@ -38,7 +40,7 @@ export class WS_Router {
             path += "index.html";
         }
         for (let i = 0; i < this._folders.length; i++) {
-            if (await exists(this._folders[i] + path)) {
+            if (await FS.exists(this._folders[i] + path)) {
                 return this._folders[i] + path;
             }
         }
@@ -88,9 +90,9 @@ export class WS_Router {
         const realPath = this.prefix ? "/" + t.slice(1).join("/") : path;
         const filePath = await this.findInFolder(realPath);
 
-        /*if (filePath) {
+        if (filePath) {
             return await this._fileHandler.handle(ctx, filePath, args);
-        }*/
+        }
 
         if (this.prefix) {
             if (!this._controllers[t[1]]) {

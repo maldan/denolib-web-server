@@ -66,7 +66,13 @@ export class WebServer {
                                 args
                             );
 
-                            if (
+                            if (response instanceof Uint8Array) {
+                                req.respond({
+                                    status: ctx.status,
+                                    headers: ctx.buildHeaders(),
+                                    body: response,
+                                });
+                            } else if (
                                 typeof response === "string" ||
                                 typeof response === "number"
                             ) {
